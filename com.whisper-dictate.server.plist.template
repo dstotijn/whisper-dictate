@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.whisper-dictate.server</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{WHISPER_SERVER_PATH}}</string>
+        <string>--model</string>
+        <string>{{MODEL_PATH}}</string>
+        <string>--port</string>
+        <string>9876</string>
+        <string>--host</string>
+        <string>127.0.0.1</string>
+        <string>--beam-size</string>
+        <string>5</string>
+        <string>--best-of</string>
+        <string>5</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/whisper-server.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/whisper-server.log</string>
+</dict>
+</plist>
