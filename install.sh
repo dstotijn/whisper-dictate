@@ -81,7 +81,10 @@ echo
 echo "=== Installation Complete ==="
 echo
 echo "Next steps:"
-echo "1. Grant Hammerspoon accessibility permissions in System Preferences"
-echo "2. Reload Hammerspoon config (Cmd+Shift+R or hs.reload())"
+echo "1. Open Hammerspoon from Applications (or Spotlight)"
+echo "2. Grant Hammerspoon accessibility permissions in System Preferences"
+echo "3. Reload Hammerspoon config (click menu bar icon → Reload Config)"
+echo "4. Test by holding § and speaking - when prompted, allow microphone access for Hammerspoon"
 echo
-echo "Test by holding § and speaking!"
+echo "Note: The first time you use the hotkey, macOS will ask for microphone"
+echo "permission. Click 'OK' to allow Hammerspoon to record audio."
