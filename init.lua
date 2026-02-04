@@ -10,6 +10,9 @@ local AUDIO_FILE = DATA_DIR .. "/audio.wav"
 local LOG_FILE = DATA_DIR .. "/whisper-dictate.log"
 local SERVER_URL = "http://127.0.0.1:9876/inference"
 
+local LANGUAGE = "auto"
+local LANGUAGES = { "auto", "en", "nl" }
+
 -- Ensure data directory exists
 os.execute("mkdir -p " .. DATA_DIR)
 
@@ -20,6 +23,17 @@ local function log(msg)
 		f:close()
 	end
 	print("[whisper-dictate]", msg)
+end
+
+local function toggleLanguage()
+	for i, lang in ipairs(LANGUAGES) do
+		if lang == LANGUAGE then
+			LANGUAGE = LANGUAGES[(i % #LANGUAGES) + 1]
+			break
+		end
+	end
+	hs.alert.show("Language: " .. LANGUAGE)
+	log("Language set to: " .. LANGUAGE)
 end
 
 -- Sound effects
@@ -74,6 +88,7 @@ AUDIO_RAW="%s"
 AUDIO_FILE="%s"
 SERVER_URL="%s"
 LOG_FILE="%s"
+LANGUAGE="%s"
 
 log_msg() { echo "[whisper-dictate] $(date '+%%H:%%M:%%S') $*" >> "$LOG_FILE"; }
 
@@ -95,7 +110,12 @@ fi
 log_msg "Audio duration: ${duration}s"
 
 log_msg "Sending to whisper-server..."
-response=$(curl -s -f -X POST -F "file=@${AUDIO_FILE}" -F "response_format=text" "$SERVER_URL" 2>&1)
+LANG_PARAM=""
+if [ "$LANGUAGE" != "auto" ]; then
+    LANG_PARAM="-F language=${LANGUAGE}"
+fi
+
+response=$(curl -s -f -X POST -F "file=@${AUDIO_FILE}" -F "response_format=text" $LANG_PARAM "$SERVER_URL" 2>&1)
 
 if [ $? -ne 0 ]; then
     log_msg "Whisper server error: $response"
@@ -107,7 +127,8 @@ echo "$response"
 		AUDIO_RAW,
 		AUDIO_FILE,
 		SERVER_URL,
-		LOG_FILE
+		LOG_FILE,
+		LANGUAGE
 	)
 
 	hs.task
@@ -149,6 +170,14 @@ dictationTap = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.ev
 		if flags.alt then
 			if eventType == hs.eventtap.event.types.keyDown then
 				hs.eventtap.keyStroke({}, "return")
+			end
+			return true
+		end
+
+		-- ctrl+§ toggles language
+		if flags.ctrl then
+			if eventType == hs.eventtap.event.types.keyDown then
+				toggleLanguage()
 			end
 			return true
 		end
