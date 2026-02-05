@@ -30,6 +30,7 @@ After installation:
 - Hold `§` to record
 - Release `§` to transcribe and paste
 - `Option+§` to press Enter
+- `Ctrl+§` to cycle language: auto → English → Dutch
 
 ## Configuration
 

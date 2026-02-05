@@ -54,6 +54,7 @@ echo
 echo "Installing whisper-server LaunchAgent..."
 WHISPER_SERVER_PATH="${WHISPER_PREFIX}/bin/whisper-server"
 SERVER_PLIST_DEST="$HOME/Library/LaunchAgents/com.whisper-dictate.server.plist"
+mkdir -p "$HOME/Library/LaunchAgents"
 
 launchctl unload "$SERVER_PLIST_DEST" 2>/dev/null || true
 
