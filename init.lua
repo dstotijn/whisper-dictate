@@ -3,6 +3,7 @@
 
 local recording = false
 local recTask = nil
+local pressEnterAfterPaste = false
 
 local DATA_DIR = os.getenv("HOME") .. "/.whisper-dictate"
 local AUDIO_RAW = DATA_DIR .. "/audio-raw.wav"
@@ -141,6 +142,12 @@ echo "$response"
 					-- Paste transcription
 					hs.pasteboard.setContents(text)
 					hs.eventtap.keyStroke({ "cmd" }, "v")
+					if pressEnterAfterPaste then
+						pressEnterAfterPaste = false
+						hs.timer.doAfter(0.2, function()
+							hs.eventtap.keyStroke({}, "return")
+						end)
+					end
 					-- Restore clipboard after short delay
 					hs.timer.doAfter(0.5, function()
 						if oldClipboard then
@@ -157,7 +164,7 @@ echo "$response"
 		:start()
 end
 
--- § key detection (key code 10) - push-to-talk, opt+§ for enter
+-- § key detection (key code 10) - push-to-talk, opt+§ for dictate+enter
 dictationTap = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, function(event)
 	local keyCode = event:getKeyCode()
 
@@ -165,14 +172,6 @@ dictationTap = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.ev
 	if keyCode == 10 then
 		local eventType = event:getType()
 		local flags = event:getFlags()
-
-		-- opt+§ triggers enter
-		if flags.alt then
-			if eventType == hs.eventtap.event.types.keyDown then
-				hs.eventtap.keyStroke({}, "return")
-			end
-			return true
-		end
 
 		-- ctrl+§ toggles language
 		if flags.ctrl then
@@ -182,8 +181,11 @@ dictationTap = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.ev
 			return true
 		end
 
-		-- Plain § for dictation
+		-- opt+§ for dictation + enter, plain § for dictation only
 		if eventType == hs.eventtap.event.types.keyDown and not recording then
+			if flags.alt then
+				pressEnterAfterPaste = true
+			end
 			startRecording()
 		elseif eventType == hs.eventtap.event.types.keyUp and recording then
 			stopRecording()
