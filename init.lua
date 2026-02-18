@@ -134,7 +134,7 @@ echo "$response"
 	hs.task
 		.new("/bin/bash", function(exitCode, stdOut, stdErr)
 			if exitCode == 0 and stdOut and #stdOut > 0 then
-				local text = stdOut:gsub("^%s+", ""):gsub("%s+$", "")
+				local text = stdOut:gsub("\r?\n", " "):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
 				if text ~= "" and text ~= "[BLANK_AUDIO]" then
 					-- Save current clipboard
 					local oldClipboard = hs.pasteboard.getContents()
